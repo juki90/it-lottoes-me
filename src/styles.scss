@@ -1,11 +1,11 @@
-$default-body-background: #c8cdcf;
-$default-panel-background: #ecf0f1;
+$default-body-background: #aaa;
+$default-panel-background: #d8dddf;
 $default-navigation-background-color: #b33939;
 $default-font-family: "Lato", "Roboto", "Oxygen",
 "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
 sans-serif;
 
-$default-panel-box-shadow: 0 5px 10px 2px rgba(50, 50, 50, 0.15) inset;
+$default-panel-box-shadow: 0 5px 15px 2px rgba(50, 50, 50, 0.08) inset;
 $default-panel-box-shadow-outer: 0 5px 20px 3px rgba(50, 50, 50, 0.2);
 
 $default-navigation-color: rgba(10, 0, 0, 1);
@@ -52,7 +52,7 @@ body {
     font-weight: 200;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: $default-body-background;
+    background-color: $default-body-background;           
 }
   
 code {
@@ -74,7 +74,7 @@ code {
 
 }
   
-.big-lotto {
+.lotto {
     padding-top: 25px;
     text-align: center;
     width: 100%;
@@ -91,6 +91,12 @@ code {
             color: #555;
             text-decoration: underline;
         }
+        ul {
+            list-style-type: none;
+            text-align: center;
+            max-width: 480px;
+            margin: 0 auto;
+        }
     }
 
     strong {
@@ -98,7 +104,12 @@ code {
         font-weight: bold;
     }
 
-    .addNewBoard, .bigLottoBoard {
+    .addNewBoard, .LottoBoard, .welcome-board {
+        background: radial-gradient(circle at top right, rgba(255,255,255,1) 0%, rgba(255,255,255,0.57) 70%),
+                    linear-gradient(70deg, rgba(105,105,105,0.05) 0%, rgba(0,0,0,0.28) 27%, rgba(181,181,181,0.82) 40%, rgba(255,255,255,0.1) 66%);
+        border: 2px inset rgba(0,0,0,0.28)
+    }
+    .addNewBoard, .LottoBoard {
         text-align: center;
         padding: 15px;
         background-color: #ececec;
@@ -113,10 +124,13 @@ code {
         width: 320px;
         margin: 15px auto;
         overflow: hidden;
+        padding: 10px 8px;
 
         button {
+            display: inline-block;
             margin: 5px 5px;
-            width: 150px;
+            width: 130px;
+            padding: 5px 0;
         }
         .warning {
             color: #d00;
@@ -124,11 +138,12 @@ code {
         }
     }
 
-    .bigLottoBoard {
+    .LottoBoard {
         width: 320px;
         background-color: $default-panel-background;
         overflow: hidden;
         text-align: left;
+        padding-left: 18px;
 
         h3 {
             margin: 10px;
@@ -143,12 +158,12 @@ code {
             font-family: $default-number-font-family, sans-serif;
             font-size: 20px;
             display: inline-block;
-            width: 28px;
+            width: 29px;
             text-align: center;
             border-radius: 3px;
             border-top: 1px solid black;
             border-bottom: 2px solid black;
-            margin: 2px;
+            margin: 2px 3px;
             background-color: #fff;
             cursor: pointer;
             user-select: none;
@@ -294,7 +309,7 @@ code {
     }
 }
   
-h1, h2, h3, h4, h5, h6, p {
+h1, h2, h3, h4, h5, h6, p, span {
       &.error {
           color: $default-danger-color;
           font-weight: bold;

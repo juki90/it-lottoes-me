@@ -1,89 +1,13 @@
 import React from 'react'
-import BigLottoBoard from './components/BigLottoBoard.js'
-
-const AddNewBoard = (props) => {
-
-	return (
-		<div className="addNewBoard">
-			<p>Buy a new board:</p>
-			<button className="notification"
-					cost="1" 
-					num="6" 
-					onClick={props.click}
-			>
-				6 numbers (1$)
-			</button>
-			<button className="notification"
-					cost="10" 
-					num="10" 
-					onClick={props.click}
-			>
-				10 numbers (10$)
-			</button>
-			<button className="notification"
-					cost="30" 
-					num="15" 
-					onClick={props.click}
-			>
-				15 numbers (30$)
-			</button>
-			<button onClick={props.clickremove} className="danger">Remove All boards</button>
-			{props.noCash ? <p className="warning">Not enough money!</p> : null}
-		</div>
-	)
-}
-
-const ResultPanel = (props) => {
-
-	const {three, four, five, six} = props.winningNums
-	const {cashWon, peopleWon, close, numbersDraw} = props
-	let msg = ''
-
-	if (six) {
-		msg = 'You are rich now, RICH!'
-	} else if (five) {
-		msg = 'You won a lot of money!'
-	} else if (four) {
-		msg = 'You won some money!'
-	} else if (three) {
-		msg = 'You won a bit of money'
-	}
-
-	return (
-		<div className="drawing-table-container">
-			<div className="drawing-table">
-				<div className="drawing-table-info">
-					<h2>{three || four || five || six ? 'Congratulations!' : 'No luck!'}</h2>
-					<h3 className="notification">{msg ? msg : 'You did not win anything this time'}</h3>
-					{six ? <h3 className='drawing-result notification result'><span>6</span> {`numbers have been matched in: ${six} board${six > 1 ? 's' : ''}` }</h3> : null}
-					{five ? <h3 className='drawing-result notification result'><span>5</span> {`numbers have been matched in: ${five} board${five > 1 ? 's' : ''}` }</h3> : null}
-					{four ? <h3 className='drawing-result notification result'><span>4</span> {`numbers have been matched in: ${four} board${four > 1 ? 's' : ''}` }</h3> : null}
-					{three ? <h3 className='drawing-result notification result'><span>3</span> {`numbers have been matched in: ${three} board${three > 1 ? 's' : ''}` }</h3> : null}
-					{cashWon ? <h2 className='drawing-result confirm'>{`So you won: ${cashWon}$`}</h2> : null}
-					{peopleWon ? <h4>{`${peopleWon} of players matched 6`}</h4> : <h4>{'Nobody matched 6. Cumulation rises!'}</h4>}
-					<button className="confirm" onClick={close}>Return to game</button>
-				</div>
-				<div className="drawing-table-result">
-					<span>{`${numbersDraw[0]}`}</span>
-					<span>{`${numbersDraw[1]}`}</span>
-					<span>{`${numbersDraw[2]}`}</span>
-					<span>{`${numbersDraw[3]}`}</span>
-					<span>{`${numbersDraw[4]}`}</span>
-					<span>{`${numbersDraw[5]}`}</span>
-				</div>
-			</div>
-		</div>
-	)
-}
+import LottoBoard from './components/LottoBoard.js'
+import {AddNewBoardPanel, ResultPanel} from './components/LottoPanels.js'
 
 
-
-class BigLottoApp extends React.Component {
-
+class LottoApp extends React.Component {
 
 	state =  {
 		everBoard: 0,
-		cash: 1000,
+		cash: 500,
 		cashForCurrentBoards: 0,
 		cashWon: 0,
 		boards: [],
@@ -92,6 +16,7 @@ class BigLottoApp extends React.Component {
 		drawingStarted: false,
 		numbersDraw: [],
 		peopleWon: 0,
+		everBoard: 0,
 		winningNumbers: {
 			three: 0,
 			four: 0,
@@ -101,6 +26,8 @@ class BigLottoApp extends React.Component {
 		err: ''
 	}
 
+	initialState = this.state
+
 	addNewBoard = (e) => {
 
 		const numType = parseInt(e.target.getAttribute('num')),
@@ -108,12 +35,12 @@ class BigLottoApp extends React.Component {
 
 		if (this.state.cash >= moneyCost) {
 			this.setState({
-				boards: this.state.boards.concat([{
+				boards: [...this.state.boards, {
 					id: this.state.everBoard,
-					numType: parseInt(numType),
+					numType: numType,
 					cost: moneyCost,
-					ref: React.createRef()
-				}]),
+					numsSelected: [],
+				}],
 				cashForCurrentBoards: this.state.cashForCurrentBoards + moneyCost,
 				cash: this.state.cash - moneyCost,
 				noMoney: false,
@@ -130,11 +57,12 @@ class BigLottoApp extends React.Component {
 
 	removeBoard = (e) => {
 
-		const nr = parseInt(e.target.getAttribute('nr')),
+		const which = parseInt(e.target.getAttribute('boardid')),
+			  boardList = this.state.boards,	
 			  c = parseInt(e.target.getAttribute('costreturn'))
 	
 		this.setState({
-				boards: this.state.boards.filter((e) => e.id !== nr),
+				boards: boardList.filter(b => b.id !== which),
 				cash: this.state.cash + c,
 				cashForCurrentBoards: this.state.cashForCurrentBoards - c
 			})
@@ -146,41 +74,24 @@ class BigLottoApp extends React.Component {
 			boards: [],
 			cash: this.state.cash + this.state.cashForCurrentBoards,
 			cashForCurrentBoards: 0,
+			everBoard: 0,
 			err: ''
 		})
 	}
 
 	handleRestartGame = () => {
-
-		this.setState({
-			everBoard: 0,
-			cash: 1000,
-			cashForCurrentBoards: 0,
-			cashWon: 0,
-			boards: [],
-			noMoney: false,
-			cumulation: Math.floor(800000 + 800000 * Math.random()),
-			drawingStarted: false,
-			numbersDraw: [],
-			peopleWon: 0,
-			winningNumbers: {
-				three: 0,
-				four: 0,
-				five: 0,
-				six: 0
-			},
-			err: ''
-		})
+		this.setState(this.initialState)
 	}
 
 	startDrawing = () => {
-		const listOfBoardNums = this.state.boards.map(board => board.ref.current.state.numsSelected),
+		
+		const listOfBoardNums = this.state.boards.map(b => b.numsSelected),
 			  randomDrawNums = [],
 			  results = []
 
 		let verified = [],
 			match3, match4, match5, match6, 
-			moneyWon, everythingSelected, peopleWon = Math.floor((Math.random() + 0.2) + Math.floor(Math.random() * 2.5))
+			moneyWon, everythingSelected, peopleWon = Math.floor(Math.random() * 2.1)
 
 		while (randomDrawNums.length < 6) {
 			let num = 1 + Math.floor(Math.random() * 48.9)
@@ -204,10 +115,10 @@ class BigLottoApp extends React.Component {
 		match5 = verified.filter(ver => ver === 5).length
 		match6 = verified.filter(ver => ver === 6).length
 
-
 		if (!match6) {
 			moneyWon = this.state.cumulation * (match4 * 0.00025 + match5 * 0.005) + match3 * 10
 		} else {
+			peopleWon++
 			moneyWon = this.state.peopleWon ? this.state.cumulation / this.state.peopleWon : this.state.cumulation
 		}
 		
@@ -226,7 +137,7 @@ class BigLottoApp extends React.Component {
 				},
 				cash: this.state.cash - this.state.cashForCurrentBoards + Math.floor(moneyWon),
 				cashWon: Math.floor(moneyWon),
-				cumulation: peopleWon ? Math.floor(1000000 + 800000 * Math.random()) : this.state.cumulation + Math.floor(1000000 + 800000 * Math.random()),
+				cumulation: peopleWon || match6 ? Math.floor(1000000 + 800000 * Math.random()) : this.state.cumulation + Math.floor(1000000 + 800000 * Math.random()),
 				drawingStarted: true,
 				numbersDraw: randomDrawNums,
 				peopleWon: Math.floor(peopleWon),
@@ -246,13 +157,73 @@ class BigLottoApp extends React.Component {
 				cash: this.state.cash + this.state.cashForCurrentBoards + this.state.cashWon,
 				cashForCurrentBoards: 0,
 				drawingStarted: false,
-				err: 'Not enough cash to buy next same amount of boards for next drawing'
+				err: 'Not enough cash to buy next same amount of boards for next drawing',
+				peopleWon: 0
 			})
 			return
 		}
 		this.setState({
 			drawingStarted: false
 		})	
+	}
+
+	handleNumMouseDown = e => {
+
+		const selected = parseInt(e.target.innerText),
+		 	  boardList = this.state.boards,
+			  which = parseInt(e.target.getAttribute("boardid")),
+			  theBoard = boardList.filter(b => b.id === which)
+		let arrSelected = theBoard[0].numsSelected
+
+		if (arrSelected.length === theBoard.numType) {
+			if(arrSelected.indexOf(selected) === -1) {
+				return null
+			}
+		}
+
+		if (arrSelected.indexOf(selected) === -1) {
+			arrSelected.push(selected)
+		} else {
+			arrSelected.splice(arrSelected.indexOf(selected), 1)
+		}
+
+		boardList.map(b => {
+			if (b.id === which) {
+				b.numsSelected = arrSelected
+			}
+			return b
+		})
+
+		this.setState({
+			boards: boardList
+		})
+	}
+
+	selectRandom = (e) => {
+		const arr = [],
+			  boardList = this.state.boards,
+			  which = parseInt(e.target.getAttribute("boardid")),
+			  type = parseInt(e.target.getAttribute("num"))
+		let i = 0
+
+		while(i < type) {
+			let num = Math.floor(Math.random() * 49 + 1)
+			if(arr.indexOf(num) === -1) {
+				arr.push(num)
+				i++
+			}
+		}
+
+		boardList.map(b => {
+			if (b.id === which) {
+				b.numsSelected = arr
+			}
+			return b
+		})
+
+		this.setState({
+			boards: boardList
+		})
 	}
 
 	onKeyPress = (e) => {
@@ -267,24 +238,24 @@ class BigLottoApp extends React.Component {
 	render() {
 
 		let lottoBoards = []
+		const { cash, cumulation, err, noMoney, winningNumbers, numbersDraw, peopleWon, cashWon, drawingStarted, boards} = this.state
 
-		if (this.state.boards.length) {
+		if (boards.length) {
 
-			lottoBoards = this.state.boards.map( (board, i) =>
-				(<BigLottoBoard key={board.id}
-								nr={board.id}
-								numT={board.numType} 
-								click={this.removeBoard}
-								cost={board.cost} 
-								ref={board.ref}
+			lottoBoards = boards.map( (board) =>
+				(<LottoBoard key={board.id}
+							 click={this.removeBoard}
+							 nummousedown={this.handleNumMouseDown}
+							 selectrandom={this.selectRandom}
+							 {...board}
 				/>)
 			)
 		}
 		
 		return (
-			<div className="big-lotto" >
+			<div className="lotto" >
 				<div className="welcome-board">
-					<h1>Welcome to <i>It lottoes Me</i> game</h1>
+					<h1>Welcome to <span className="confirm">It Lottoes Me</span> game</h1>
 					<p>Please buy boards for drawing and fill them up. When filled up, please click 'Draw' button to start drawing. </p>
 					<p>You can choose between 6, 10 and 15 numbers boards.</p>
 					<p>If your numbers match:</p>
@@ -294,23 +265,26 @@ class BigLottoApp extends React.Component {
 						<li>5 winning numbers - you get 0.5% of cumulation</li>
 						<li>6 winning numbers - you get 100% of cumulation divided by number of winning people</li>
 					</ul>
-					<p><strong>Your budget is: {`${this.state.cash.toLocaleString()}$`}</strong></p>
-					<p><strong>This time's cumulation is: {`${this.state.cumulation.toLocaleString()}$`}</strong></p>
-					<button className="confirm" onKeyPress={this.onKeyPress} onClick={this.startDrawing}>Start Drawing</button>
+					<h2>Your budget is: {cash.toLocaleString()}$</h2>
+					<p><strong><small>This time's cumulation is: {cumulation.toLocaleString()}$</small></strong></p>
+					<button className="confirm" onKeyPress={this.onKeyPress} 
+												onClick={this.startDrawing}>
+						Start Drawing
+					</button>
 					<button className="danger" onClick={this.handleRestartGame}>Restart Game</button>
-					{this.state.err ? <p className="error">{`${this.state.err}`}</p> : null}
+					{err ? <p className="error">{err}</p> : null}
 				</div>
 				<br />
 				{lottoBoards}
-				<AddNewBoard noCash={this.state.noMoney ? "1" : null}
-							click={this.addNewBoard} 
-							clickremove={this.removeAllBoards}
+				<AddNewBoardPanel noCash={noMoney ? "1" : null}
+							 	  click={this.addNewBoard} 
+								  clickremove={this.removeAllBoards}
 				/>
-				{this.state.drawingStarted ? <ResultPanel close={this.closeDrawingTable} 
-														winningNums={this.state.winningNumbers}
-														numbersDraw={this.state.numbersDraw}
-														peopleWon={this.state.peopleWon} 
-														cashWon={this.state.cashWon}
+				{drawingStarted ? <ResultPanel close={this.closeDrawingTable} 
+													  winningNums={winningNumbers}
+													  numbersDraw={numbersDraw}
+													  peopleWon={peopleWon} 
+													  cashWon={cashWon}
 											/> 
 				: null}
 			</div>
@@ -318,5 +292,5 @@ class BigLottoApp extends React.Component {
 	}
 }
 
-export default BigLottoApp
+export default LottoApp
 
