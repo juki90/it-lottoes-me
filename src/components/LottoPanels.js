@@ -55,10 +55,10 @@ const ResultPanel = (props) => {
                 <div className="drawing-table-info">
                     <h2>{three || four || five || six ? 'Congratulations!' : 'No luck!'}</h2>
                     <h3 className="notification">{msg ? msg : 'You did not win anything this time'}</h3>
-                    {six ? <h3 className='drawing-result notification result'><span>6</span> {`numbers have been matched in: ${six} board${six > 1 ? 's' : ''}` }</h3> : null}
-                    {five ? <h3 className='drawing-result notification result'><span>5</span> {`numbers have been matched in: ${five} board${five > 1 ? 's' : ''}` }</h3> : null}
-                    {four ? <h3 className='drawing-result notification result'><span>4</span> {`numbers have been matched in: ${four} board${four > 1 ? 's' : ''}` }</h3> : null}
-                    {three ? <h3 className='drawing-result notification result'><span>3</span> {`numbers have been matched in: ${three} board${three > 1 ? 's' : ''}` }</h3> : null}
+                    {six ? <h3 className='drawing-result notification result'><span>6</span> {`- numbers have been matched in: ${six} board${six > 1 ? 's' : ''}` }</h3> : null}
+                    {five ? <h3 className='drawing-result notification result'><span>5</span> {`- numbers have been matched in: ${five} board${five > 1 ? 's' : ''}` }</h3> : null}
+                    {four ? <h3 className='drawing-result notification result'><span>4</span> {`- numbers have been matched in: ${four} board${four > 1 ? 's' : ''}` }</h3> : null}
+                    {three ? <h3 className='drawing-result notification result'><span>3</span> {`- numbers have been matched in: ${three} board${three > 1 ? 's' : ''}` }</h3> : null}
                     {cashWon ? <h2 className='drawing-result confirm'>{`So you won: ${cashWon}$`}</h2> : null}
                     {peopleWon ? <h4>{`${peopleWon} of players matched 6`}</h4> : <h4>{'Nobody matched 6. Cumulation rises!'}</h4>}
                     <button className="confirm" onClick={close}>Return to game</button>

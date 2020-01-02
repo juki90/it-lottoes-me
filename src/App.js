@@ -151,20 +151,46 @@ class LottoApp extends React.Component {
 	}
 
 	closeDrawingTable = () => {
-		if (this.state.cash < 0) {
+
+		let boards = this.state.boards,
+			boardsCash = this.state.cashForCurrentBoards,
+			cash = this.state.cash,
+			dropped = 0
+
+		boards.sort((a, b) => {
+			if(a.numType > b.numType) {
+				return 1
+			}
+			return -1
+		})
+
+		 if (cash < 0) {
+			while(cash < 0 && boards.length) {
+				dropped = boards.pop()
+				cash += dropped.cost
+				boardsCash -= dropped.cost
+			}
+
+			boards.sort((a, b) => {
+				if(a.id > b.id) {
+					return 1
+				}
+				return -1
+			})
+			
 			this.setState({
-				boards: [],
-				cash: this.state.cash + this.state.cashForCurrentBoards + this.state.cashWon,
-				cashForCurrentBoards: 0,
+				boards: boards,
+				cash: cash + this.state.cashWon,
+				cashForCurrentBoards: boardsCash,
 				drawingStarted: false,
-				err: 'Not enough cash to buy next same amount of boards for next drawing',
+				err: 'Not enough cash to buy next same amount of boards. The ones you have not enough cash for were dropped.',
 				peopleWon: 0
 			})
-			return
+		} else {
+			this.setState({
+				drawingStarted: false
+			})	
 		}
-		this.setState({
-			drawingStarted: false
-		})	
 	}
 
 	handleNumMouseDown = e => {
@@ -260,10 +286,10 @@ class LottoApp extends React.Component {
 					<p>You can choose between 6, 10 and 15 numbers boards.</p>
 					<p>If your numbers match:</p>
 					<ul>
-						<li>3 winning numbers - you get 10$</li>
-						<li>4 winning numbers - you get 0.025% of cumulation</li>
-						<li>5 winning numbers - you get 0.5% of cumulation</li>
-						<li>6 winning numbers - you get 100% of cumulation divided by number of winning people</li>
+						<li><u>3 winning numbers</u> - you get 10$</li>
+						<li><u>4 winning numbers</u> - you get 0.025% of cumulation</li>
+						<li><u>5 winning numbers</u> - you get 0.5% of cumulation</li>
+						<li><u>6 winning numbers</u> - you get 100% of cumulation divided by number of winning people</li>
 					</ul>
 					<h2>Your budget is: {cash.toLocaleString()}$</h2>
 					<p><strong><small>This time's cumulation is: {cumulation.toLocaleString()}$</small></strong></p>
