@@ -1,6 +1,61 @@
 import React from 'react'
 import LottoBoard from './components/LottoBoard.js'
-import {AddNewBoardPanel, ResultPanel} from './components/LottoPanels.js'
+import { AddNewBoardPanel, ResultPanel } from './components/LottoPanels.js'
+import styled from 'styled-components'
+import { GlobalStyle, variables } from './styles.js'
+
+const LottoWrapper = styled.div`
+    padding-top: 25px;
+    text-align: center;
+    width: 100%;
+`	  
+const WelcomeBoard = styled(LottoWrapper)`
+    box-shadow: ${variables.default_panel_box_shadow}, ${variables.default_panel_box_shadow_outer};
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 4px;
+	background: ${variables.panel_background};
+	border: ${variables.panel_border};
+    i {
+        font-style: normal;
+        color: #555;
+        text-decoration: underline;
+    }
+    ul {
+        list-style-type: none;
+        text-align: center;
+        margin: 0 auto;
+        padding: 0;
+        li {
+            margin-bottom: 10px;
+        }
+	}
+    strong {
+        font-size: 140%;
+        font-weight: bold;
+    }
+`
+
+const Button = styled.button`
+	font-weight: bold;
+	display: inline-block;
+	padding: 5px 8px;
+	margin: 10px 5px;
+	border-radius: 3px;
+	min-width: 100px;
+	transition: 0.3s;
+	cursor: pointer;
+	background-color: transparent;
+	border-style: solid;
+	border-width: 1px;
+	outline: 0 none !important;
+	color: ${({type}) => variables.colors_resolver(type)};
+	border-color: ${({type}) => variables.colors_resolver(type)};
+	&:hover {
+		background-color: ${({type}) => variables.colors_resolver(type, true)};
+	}	
+`
 
 
 class LottoApp extends React.Component {
@@ -16,7 +71,6 @@ class LottoApp extends React.Component {
 		drawingStarted: false,
 		numbersDraw: [],
 		peopleWon: 0,
-		everBoard: 0,
 		winningNumbers: {
 			three: 0,
 			four: 0,
@@ -30,9 +84,8 @@ class LottoApp extends React.Component {
 
 	addNewBoard = (e) => {
 
-		const numType = parseInt(e.target.getAttribute('num')),
-			  moneyCost = parseInt(e.target.getAttribute('cost'))
-
+		const numType = parseInt(e.target.attributes.getNamedItem('data-num').value),
+			  moneyCost = parseInt(e.target.attributes.getNamedItem('data-cost').value)
 		if (this.state.cash >= moneyCost) {
 			this.setState({
 				boards: [...this.state.boards, {
@@ -57,9 +110,9 @@ class LottoApp extends React.Component {
 
 	removeBoard = (e) => {
 
-		const which = parseInt(e.target.getAttribute('boardid')),
+		const which = parseInt(e.target.attributes.getNamedItem('data-boardid').value),
 			  boardList = this.state.boards,	
-			  c = parseInt(e.target.getAttribute('costreturn'))
+			  c = parseInt(e.target.attributes.getNamedItem('data-costreturn').value)
 	
 		this.setState({
 				boards: boardList.filter(b => b.id !== which),
@@ -91,7 +144,7 @@ class LottoApp extends React.Component {
 
 		let verified = [],
 			match3, match4, match5, match6, 
-			moneyWon, everythingSelected, peopleWon = Math.floor(Math.random() * 2.1)
+			moneyWon, everythingSelected, peopleWon = Math.floor(Math.random() * 2.6)
 
 		while (randomDrawNums.length < 6) {
 			let num = 1 + Math.floor(Math.random() * 48.9)
@@ -119,7 +172,7 @@ class LottoApp extends React.Component {
 			moneyWon = this.state.cumulation * (match4 * 0.00025 + match5 * 0.005) + match3 * 10
 		} else {
 			peopleWon++
-			moneyWon = this.state.peopleWon ? this.state.cumulation / this.state.peopleWon : this.state.cumulation
+			moneyWon = peopleWon ? this.state.cumulation / peopleWon : this.state.cumulation
 		}
 		
 		everythingSelected = 0
@@ -140,7 +193,7 @@ class LottoApp extends React.Component {
 				cumulation: peopleWon || match6 ? Math.floor(1000000 + 800000 * Math.random()) : this.state.cumulation + Math.floor(1000000 + 800000 * Math.random()),
 				drawingStarted: true,
 				numbersDraw: randomDrawNums,
-				peopleWon: Math.floor(peopleWon),
+				peopleWon: peopleWon,
 				err: ''
 			})
 		} else {
@@ -198,10 +251,10 @@ class LottoApp extends React.Component {
 		const selected = parseInt(e.target.innerText),
 		 	  boardList = this.state.boards,
 			  which = parseInt(e.target.getAttribute("boardid")),
-			  theBoard = boardList.filter(b => b.id === which)
-		let arrSelected = theBoard[0].numsSelected
+			  theBoard = boardList.filter(b => b.id === which),
+			  arrSelected = theBoard[0].numsSelected
 
-		if (arrSelected.length === theBoard.numType) {
+		if (arrSelected.length === theBoard[0].numType) {
 			if(arrSelected.indexOf(selected) === -1) {
 				return null
 			}
@@ -228,8 +281,8 @@ class LottoApp extends React.Component {
 	selectRandom = (e) => {
 		const arr = [],
 			  boardList = this.state.boards,
-			  which = parseInt(e.target.getAttribute("boardid")),
-			  type = parseInt(e.target.getAttribute("num"))
+			  which = parseInt(e.target.attributes.getNamedItem('data-boardid').value),
+			  type = parseInt(e.target.attributes.getNamedItem('data-num').value)
 		let i = 0
 
 		while(i < type) {
@@ -279,41 +332,44 @@ class LottoApp extends React.Component {
 		}
 		
 		return (
-			<div className="lotto" >
-				<div className="welcome-board">
-					<h1>Welcome to <span className="confirm">It Lottoes Me</span> game</h1>
-					<p>Please buy boards for drawing and fill them up. When filled up, please click 'Draw' button to start drawing. </p>
-					<p>You can choose between 6, 10 and 15 numbers boards.</p>
-					<p>If your numbers match:</p>
-					<ul>
-						<li><u>3 winning numbers</u> - you get 10$</li>
-						<li><u>4 winning numbers</u> - you get 0.025% of cumulation</li>
-						<li><u>5 winning numbers</u> - you get 0.5% of cumulation</li>
-						<li><u>6 winning numbers</u> - you get 100% of cumulation divided by number of winning people</li>
-					</ul>
-					<h2>Your budget is: {cash.toLocaleString()}$</h2>
-					<p><strong><small>This time's cumulation is: {cumulation.toLocaleString()}$</small></strong></p>
-					<button className="confirm" onKeyPress={this.onKeyPress} 
-												onClick={this.startDrawing}>
-						Start Drawing
-					</button>
-					<button className="danger" onClick={this.handleRestartGame}>Restart Game</button>
-					{err ? <p className="error">{err}</p> : null}
-				</div>
-				<br />
-				{lottoBoards}
-				<AddNewBoardPanel noCash={noMoney ? "1" : null}
-							 	  click={this.addNewBoard} 
-								  clickremove={this.removeAllBoards}
-				/>
-				{drawingStarted ? <ResultPanel close={this.closeDrawingTable} 
-													  winningNums={winningNumbers}
-													  numbersDraw={numbersDraw}
-													  peopleWon={peopleWon} 
-													  cashWon={cashWon}
-											/> 
-				: null}
-			</div>
+			<>
+				<GlobalStyle />
+				<LottoWrapper>
+					<WelcomeBoard>
+						<h1>Welcome to <span className="confirm">It Lottoes Me</span> game</h1>
+						<p>Please buy boards for drawing and fill them up. When filled up, please click 'Draw' button to start drawing. </p>
+						<p>You can choose between 6, 10 and 15 numbers boards.</p>
+						<p>If your numbers match:</p>
+						<ul>
+							<li><u>3 winning numbers</u> - you get 10$</li>
+							<li><u>4 winning numbers</u> - you get 0.025% of cumulation</li>
+							<li><u>5 winning numbers</u> - you get 0.5% of cumulation</li>
+							<li><u>6 winning numbers</u> - you get 100% of cumulation divided by number of winning people</li>
+						</ul>
+						<h2>Your budget is: {cash.toLocaleString()}$</h2>
+						<p><strong><small>This time's cumulation is: {cumulation.toLocaleString()}$</small></strong></p>
+						<Button type="confirm" onKeyPress={this.onKeyPress} 
+													onClick={this.startDrawing}>
+							Start Drawing
+						</Button>
+						<Button type="danger" onClick={this.handleRestartGame}>Restart Game</Button>
+						{err ? <p className="error">{err}</p> : null}
+					</WelcomeBoard>
+					<br />
+					{lottoBoards}
+					<AddNewBoardPanel noCash={noMoney ? "1" : null}
+									click={this.addNewBoard} 
+									clickremove={this.removeAllBoards}
+					/>
+					{drawingStarted ? <ResultPanel close={this.closeDrawingTable} 
+														winningNums={winningNumbers}
+														numbersDraw={numbersDraw}
+														peopleWon={peopleWon} 
+														cashWon={cashWon}
+												/> 
+					: null}
+				</LottoWrapper>
+			</>
 		)
 	}
 }
