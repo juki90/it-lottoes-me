@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { variables } from '../styles.js'
+import PropTypes from 'prop-types'
 
 const DrawingTableWrapper = styled.div`
     position: fixed;
@@ -231,5 +232,26 @@ const ResultPanel = (props) => {
         </DrawingTableWrapper>
     )
 }
+
+AddNewBoardPanel.propTypes = {
+    click: PropTypes.func.isRequired,
+    clickremove: PropTypes.func.isRequired,
+    noCash: PropTypes.bool.isRequired
+}
+
+Button.propTypes = {
+    type: PropTypes.string,
+    "data-cost": PropTypes.number.isRequired,
+    "data-num": PropTypes.number.isRequired, 
+    onClick: PropTypes.func.isRequired
+}
+
+ResultPanel.propTypes = {
+    cashWon: PropTypes.number.isRequired,
+    peopleWon: PropTypes.number.isRequired,
+    close: PropTypes.func.isRequired,
+    numbersDraw: PropTypes.number.isRequired 
+}
+
 
 export {AddNewBoardPanel, ResultPanel}

@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { variables } from '../styles.js'
+import PropTypes from 'prop-types'
 
 const LottoBoardWrapper = styled.div`
     width: 320px;
@@ -118,6 +119,25 @@ const LottoBoard = ({cost, id, click, nummousedown, numsSelected, numType, selec
 		</LottoBoardWrapper>
 	)
 }
+
+NumField.propTypes = {
+	selected: PropTypes.number.isRequired, 
+    num: PropTypes.number.isRequired,
+    mousedown: PropTypes.func.isRequired,
+    boardid: PropTypes.number.isRequired
+}
+
+LottoBoard.propTypes = {
+	cost: PropTypes.number.isRequired,
+    id: PropTypes.number.isRequired,
+    click: PropTypes.func.isRequired,
+    nummousedown: PropTypes.func.isRequired,
+    numsSelected: PropTypes.array.isRequired,
+    numType: PropTypes.number.isRequired,
+    selectrandom: PropTypes.func.isRequired
+   
+}
+
 
 
 export default LottoBoard
