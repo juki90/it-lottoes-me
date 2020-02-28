@@ -236,7 +236,7 @@ class LottoApp extends React.Component {
 				cash: cash + this.state.cashWon,
 				cashForCurrentBoards: boardsCash,
 				drawingStarted: false,
-				err: 'Not enough cash to buy next same amount of boards. The ones you have not enough cash for were dropped.',
+				err: 'Not enough cash to buy next same amount of boards. The ones you have not enough cash for were removed.',
 				peopleWon: 0
 			})
 		} else {
@@ -337,7 +337,7 @@ class LottoApp extends React.Component {
 				<LottoWrapper>
 					<WelcomeBoard>
 						<h1>Welcome to <span className="confirm">It Lottoes Me</span> game</h1>
-						<p>Please buy boards for drawing and fill them up. When filled up, please click 'Draw' button to start drawing. </p>
+						<p>Please buy boards for drawing and fill them up. When filled up, please click 'Start Draw' button to start drawing. </p>
 						<p>You can choose between 6, 10 and 15 numbers boards.</p>
 						<p>If your numbers match:</p>
 						<ul>
